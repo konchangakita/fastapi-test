@@ -1,0 +1,42 @@
+services:
+  backend:
+    build: ./backend
+    container_name: fastapi-backend
+    ports:
+      - "7776:7776"
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - ./backend:/app
+    networks:
+      - fastapi-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7776/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: fastapi-frontend
+    ports:
+      - "7777:7777"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:7776 # テスト用 - サーバー上でも動作
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - fastapi-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  fastapi-network:
+    driver: bridge
+
+volumes:
+  node_modules:
