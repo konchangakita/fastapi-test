@@ -86,6 +86,8 @@ npm run dev
 - Tailwind CSS
 - Axios
 
-## ライセンス
 
-MIT License
+## SocketIO テスト環境も実施
+リアルタイム双方向通信をテストするためのSocketIOは下記
+詳細は [README-socketio.md](./README-socketio.md) を参照してください。
+
