@@ -27,6 +27,8 @@ Socket.IOは、リアルタイム双方向通信を実現するJavaScriptライ�
 
 #### バックエンド（Python + FastAPI）
 
+**Pythonバージョン**: 3.11
+
 ```txt
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
@@ -39,8 +41,11 @@ python-multipart==0.0.6
 - `python-socketio==5.13.0`: 最新の安定版、Socket.IOプロトコル4.xに対応
 - `python-engineio==4.12.2`: 上記バージョンとの互換性を保つため
 - `fastapi==0.104.1`: 最新の安定版
+- `Python 3.11`: 最新の安定版、FastAPIとSocketIOの完全サポート
 
 #### フロントエンド（Next.js + React）
+
+**Node.jsバージョン**: 18
 
 ```json
 {
@@ -66,6 +71,7 @@ python-multipart==0.0.6
 - `socket.io-client==4.7.2`: バックエンドのpython-socketio 5.13.0と互換性がある（Engine.IO 4.xプロトコル）
 - `@types/socket.io-client==1.4.36`: TypeScript型定義
 - `next==14.0.0`: App Routerを使用するため
+- `Node.js 18`: Next.js 14の推奨バージョン、安定性とパフォーマンスを重視
 
 ### プロジェクト構造
 
@@ -99,6 +105,7 @@ services:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
+    # Python 3.11を使用
 
   socketio-frontend:
     build: ./socketio-frontend
@@ -108,6 +115,7 @@ services:
       - socketio-backend
     environment:
       - NODE_ENV=development
+    # Node.js 18を使用
 ```
 
 ### バージョン互換性の重要性
