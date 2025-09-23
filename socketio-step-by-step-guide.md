@@ -268,7 +268,7 @@ const disconnectSocket = () => {
 ```typescript
 return (
   <div className="container">
-    <h1>SocketIO テスト環境 (Next.js App Router)</h1>
+    <h1>SocketIO チャットルーム (Next.js App Router)</h1>
     
     <div className="card">
       <h2>接続状態</h2>
@@ -389,18 +389,18 @@ return (
 @sio.event
 async def join_room(sid, data):
     room = data['room']
-    sio.enter_room(sid, room)
+    await sio.enter_room(sid, room)
     print(f"クライアント {sid} がルーム {room} に参加しました")
     # ルーム内の全メンバーに参加通知を送信
-    await sio.emit('room_message', {'data': f'クライアント {sid} がルーム {room} に参加しました'}, room=room)
+    await sio.emit('room_notification', {'data': f'ユーザーがルーム {room} に参加しました'}, to=room)
 
 @sio.event
 async def leave_room(sid, data):
     room = data['room']
-    sio.leave_room(sid, room)
+    await sio.leave_room(sid, room)
     print(f"クライアント {sid} がルーム {room} から退出しました")
     # ルーム内の全メンバーに退出通知を送信
-    await sio.emit('room_message', {'data': f'クライアント {sid} がルーム {room} から退出しました'}, room=room)
+    await sio.emit('room_notification', {'data': f'ユーザーがルーム {room} から退出しました'}, to=room)
 ```
 
 #### ルーム内メッセージ送信
@@ -412,7 +412,7 @@ async def room_message(sid, data):
     message = data['message']
     print(f"ルーム {room} でメッセージ受信: {message}")
     # ルーム内の全メンバーにメッセージを送信
-    await sio.emit('room_message', {'data': f"クライアント {sid}: {message}"}, room=room)
+    await sio.emit('room_message', {'data': f"ユーザー: {message}"}, to=room)
 ```
 
 #### 全体メッセージ送信（既存）
@@ -422,7 +422,7 @@ async def room_message(sid, data):
 async def send_message(sid, data):
     print(f"メッセージ受信: {data}")
     # 全クライアントにメッセージをブロードキャスト
-    await sio.emit('message', {'data': f"クライアント {sid}: {data['message']}"})
+    await sio.emit('message', {'data': f"ユーザー: {data['message']}"})
 ```
 
 ### フロントエンド実装
@@ -501,6 +501,12 @@ const connectSocket = () => {
     setMessages((prev: string[]) => [...prev, `[ルーム] ${data.data}`])
   })
 
+  // ルーム通知受信
+  newSocket.on('room_notification', (data: Message) => {
+    console.log('ルーム通知受信:', data)
+    setMessages((prev: string[]) => [...prev, `[通知] ${data.data}`])
+  })
+
   // ... 既存の処理 ...
 }
 ```
@@ -510,7 +516,7 @@ const connectSocket = () => {
 ```typescript
 return (
   <div className="container">
-    <h1>SocketIO テスト環境 (Next.js App Router)</h1>
+    <h1>SocketIO チャットルーム (Next.js App Router)</h1>
     
     {/* 接続状態セクション */}
     <div className="card">

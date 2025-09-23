@@ -1,6 +1,6 @@
-# SocketIO テスト環境
+# SocketIO チャットルーム
 
-シンプルなSocketIOテスト環境です。FastAPI + python-socketio 5.13.0 のバックエンドと Next.js + socket.io-client のフロントエンドで構成されています。
+SocketIOを使ったリアルタイムチャットルームアプリケーションです。FastAPI + python-socketio 5.13.0 のバックエンドと Next.js + socket.io-client のフロントエンドで構成されています。
 
 ## 構成
 
@@ -33,12 +33,16 @@ docker-compose -f docker-compose-socketio.yml up --build -d
 - クライアント接続/切断の管理
 - 全クライアントへのメッセージブロードキャスト
 - ルーム機能（参加/退出/ルーム内メッセージ）
+- ルーム参加・退出の通知機能
+- 非同期ルーム管理（await enter_room/leave_room）
 
 ### フロントエンド機能
 - リアルタイム接続状態表示
-- メッセージ送受信
+- メッセージ送受信（全体・ルーム内）
 - ルーム参加/退出
 - ルーム内メッセージ送受信
+- ルーム参加・退出の通知表示
+- デバッグ用コンソールログ
 
 ## 停止方法
 
@@ -60,6 +64,12 @@ python main.py
 - python-engineio==4.12.2
 - fastapi==0.104.1
 - uvicorn[standard]==0.24.0
+
+**フロントエンド依存関係:**
+- socket.io-client==4.7.2
+- @types/socket.io-client==1.4.36
+- next==14.0.0
+- react==18.2.0
 
 ### フロントエンド開発
 ```bash

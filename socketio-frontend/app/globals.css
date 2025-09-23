@@ -131,3 +131,96 @@ h1 {
   margin-bottom: 0;
 }
 
+/* ルームメッセージのスタイル */
+.message:has-text("[ルーム]") {
+  border-left-color: #28a745;
+  background-color: #f8f9fa;
+}
+
+/* ルーム管理セクションのスタイル */
+.card h2 {
+  color: #34495e;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+/* 入力フィールドのスタイル */
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* ボタンのスタイル */
+.button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.button.connect {
+  background-color: #28a745;
+}
+
+.button.connect:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.button.disconnect {
+  background-color: #dc3545;
+}
+
+.button.disconnect:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+/* メッセージリストのスタイル */
+.message-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+}
+
+/* ルーム参加状態の表示 */
+.current-room {
+  background-color: #e7f3ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  color: #0066cc;
+  font-weight: bold;
+}
+
