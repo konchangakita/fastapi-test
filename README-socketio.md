@@ -1,10 +1,10 @@
 # SocketIO テスト環境
 
-シンプルなSocketIOテスト環境です。FastAPI + python-socketio のバックエンドと Next.js + socket.io-client のフロントエンドで構成されています。
+シンプルなSocketIOテスト環境です。FastAPI + python-socketio 5.13.0 のバックエンドと Next.js + socket.io-client のフロントエンドで構成されています。
 
 ## 構成
 
-- **バックエンド**: FastAPI + python-socketio
+- **バックエンド**: FastAPI + python-socketio 5.13.0 + python-engineio 4.12.2
 - **フロントエンド**: Next.js + TypeScript + socket.io-client
 
 ## 詳細ガイド
@@ -54,6 +54,12 @@ cd socketio-backend
 pip install -r requirements.txt
 python main.py
 ```
+
+**依存関係:**
+- python-socketio==5.13.0
+- python-engineio==4.12.2
+- fastapi==0.104.1
+- uvicorn[standard]==0.24.0
 
 ### フロントエンド開発
 ```bash

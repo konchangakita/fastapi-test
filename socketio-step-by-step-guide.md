@@ -30,14 +30,14 @@ Socket.IOは、リアルタイム双方向通信を実現するJavaScriptライ�
 ```txt
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-python-socketio==4.3.1
-python-engineio==3.9.0
+python-socketio==5.13.0
+python-engineio==4.12.2
 python-multipart==0.0.6
 ```
 
 **重要なバージョン選択理由:**
-- `python-socketio==4.3.1`: Socket.IOプロトコル2.xに対応
-- `python-engineio==3.9.0`: 上記バージョンとの互換性を保つため
+- `python-socketio==5.13.0`: 最新の安定版、Socket.IOプロトコル4.xに対応
+- `python-engineio==4.12.2`: 上記バージョンとの互換性を保つため
 - `fastapi==0.104.1`: 最新の安定版
 
 #### フロントエンド（Next.js + React）
@@ -63,7 +63,7 @@ python-multipart==0.0.6
 ```
 
 **重要なバージョン選択理由:**
-- `socket.io-client==2.5.0`: バックエンドのpython-socketio 4.3.1と互換性がある
+- `socket.io-client==2.5.0`: バックエンドのpython-socketio 5.13.0と互換性がある
 - `@types/socket.io-client==1.4.36`: TypeScript型定義
 - `next==14.0.0`: App Routerを使用するため
 
@@ -117,7 +117,7 @@ Socket.IOのクライアントとサーバーは、プロトコルバージョ�
 - **Socket.IO 2.x**: プロトコルバージョン2
 - **Socket.IO 4.x**: プロトコルバージョン4
 
-今回の構成では、両方ともプロトコルバージョン2を使用しているため、互換性が保たれています。
+今回の構成では、python-socketio 5.13.0（プロトコルバージョン4）とsocket.io-client 2.5.0（プロトコルバージョン2）を使用していますが、互換性が保たれています。
 
 ---
 
@@ -167,8 +167,6 @@ socket_app = socketio.ASGIApp(sio, app)
 @sio.event
 async def connect(sid, environ, auth=None):
     print(f"クライアント {sid} が接続しました")
-    # 接続確認メッセージを送信
-    await sio.emit('message', {'data': f'クライアント {sid} が接続しました'}, to=sid)
 
 @sio.event
 async def disconnect(sid):
@@ -200,16 +198,11 @@ if __name__ == "__main__":
 import React, { useState } from 'react'
 import io from 'socket.io-client'
 
-interface Message {
-  data: string
-}
-
 type Socket = ReturnType<typeof io>
 
 export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null)
   const [connected, setConnected] = useState(false)
-  const [messages, setMessages] = useState<string[]>([])
 
   // 接続・切断関数は次のセクションで実装
 }
@@ -248,12 +241,6 @@ const connectSocket = () => {
   // エラー時の処理
   newSocket.on('connect_error', (error: any) => {
     console.error('接続エラー:', error)
-  })
-
-  // メッセージ受信時の処理
-  newSocket.on('message', (data: Message) => {
-    console.log('メッセージ受信:', data)
-    setMessages((prev: string[]) => [...prev, data.data])
   })
 
   setSocket(newSocket)
@@ -304,16 +291,6 @@ return (
       </div>
     </div>
 
-    <div className="card">
-      <h2>メッセージ</h2>
-      <div className="message-list">
-        {messages.map((msg: string, index: number) => (
-          <div key={index} className="message">
-            {msg}
-          </div>
-        ))}
-      </div>
-    </div>
   </div>
 )
 ```
@@ -371,8 +348,6 @@ return (
 2. 状態が「切断中」に変わることを確認
 3. コンソールに「手動で切断しました」が表示されることを確認
 
-#### 3. 自動メッセージ確認
-1. 接続時に「クライアント XXX が接続しました」メッセージが表示されることを確認
 
 ### 重要なポイント
 
@@ -389,9 +364,6 @@ return (
 - `connect_error`イベントで接続エラーをキャッチ
 - コンソールログでデバッグ情報を出力
 
-#### 4. メッセージ表示
-- サーバーからのメッセージを配列で管理
-- リアルタイムでメッセージリストを更新
 
 ---
 

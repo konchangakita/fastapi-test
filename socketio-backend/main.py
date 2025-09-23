@@ -29,38 +29,10 @@ socket_app = socketio.ASGIApp(sio, app)
 @sio.event
 async def connect(sid, environ, auth=None):
     print(f"クライアント {sid} が接続しました")
-    sio.emit('message', {'data': f'クライアント {sid} が接続しました'}, to=sid)
 
 @sio.event
 async def disconnect(sid):
     print(f"クライアント {sid} が切断しました")
-
-@sio.event
-async def send_message(sid, data):
-    print(f"メッセージ受信: {data}")
-    # 全クライアントにメッセージをブロードキャスト
-    sio.emit('message', {'data': f"クライアント {sid}: {data['message']}"})
-
-@sio.event
-async def join_room(sid, data):
-    room = data['room']
-    sio.enter_room(sid, room)
-    print(f"クライアント {sid} がルーム {room} に参加しました")
-    sio.emit('room_message', {'data': f'クライアント {sid} がルーム {room} に参加しました'}, room=room)
-
-@sio.event
-async def leave_room(sid, data):
-    room = data['room']
-    sio.leave_room(sid, room)
-    print(f"クライアント {sid} がルーム {room} から退出しました")
-    sio.emit('room_message', {'data': f'クライアント {sid} がルーム {room} から退出しました'}, room=room)
-
-@sio.event
-async def room_message(sid, data):
-    room = data['room']
-    message = data['message']
-    print(f"ルーム {room} でメッセージ受信: {message}")
-    sio.emit('room_message', {'data': f"クライアント {sid}: {message}"}, room=room)
 
 @app.get("/")
 async def root():
