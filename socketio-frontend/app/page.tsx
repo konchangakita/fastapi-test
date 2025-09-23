@@ -16,13 +16,7 @@ export default function Home() {
     }
 
     console.log('SocketIO接続を開始します...')
-    const newSocket = io('http://localhost:8000', {
-      transports: ['polling', 'websocket'],
-      upgrade: true,
-      rememberUpgrade: false,
-      timeout: 20000,
-      forceNew: true
-    })
+    const newSocket = io(`${window.location.protocol}//${window.location.hostname}:8000`)
     
     newSocket.on('connect', () => {
       console.log('サーバーに接続しました')
@@ -36,6 +30,7 @@ export default function Home() {
 
     newSocket.on('connect_error', (error: any) => {
       console.error('接続エラー:', error)
+      setConnected(false)
     })
 
     setSocket(newSocket)

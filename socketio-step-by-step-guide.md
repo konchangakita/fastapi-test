@@ -48,7 +48,7 @@ python-multipart==0.0.6
     "next": "^14.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^2.5.0"
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -63,7 +63,7 @@ python-multipart==0.0.6
 ```
 
 **重要なバージョン選択理由:**
-- `socket.io-client==2.5.0`: バックエンドのpython-socketio 5.13.0と互換性がある
+- `socket.io-client==4.7.2`: バックエンドのpython-socketio 5.13.0と互換性がある（Engine.IO 4.xプロトコル）
 - `@types/socket.io-client==1.4.36`: TypeScript型定義
 - `next==14.0.0`: App Routerを使用するため
 
@@ -117,7 +117,7 @@ Socket.IOのクライアントとサーバーは、プロトコルバージョ�
 - **Socket.IO 2.x**: プロトコルバージョン2
 - **Socket.IO 4.x**: プロトコルバージョン4
 
-今回の構成では、python-socketio 5.13.0（プロトコルバージョン4）とsocket.io-client 2.5.0（プロトコルバージョン2）を使用していますが、互換性が保たれています。
+今回の構成では、python-socketio 5.13.0（Engine.IO 4.xプロトコル）とsocket.io-client 4.7.2（Engine.IO 4.xプロトコル）を使用しており、完全に互換性が保たれています。
 
 ---
 
@@ -218,13 +218,7 @@ const connectSocket = () => {
   }
 
   console.log('SocketIO接続を開始します...')
-  const newSocket = io('http://localhost:8000', {
-    transports: ['polling', 'websocket'],
-    upgrade: true,
-    rememberUpgrade: false,
-    timeout: 20000,
-    forceNew: true
-  })
+  const newSocket = io(`${window.location.protocol}//${window.location.hostname}:8000`)
   
   // 接続成功時の処理
   newSocket.on('connect', () => {
@@ -338,10 +332,12 @@ return (
 ### 動作確認
 
 #### 1. 接続テスト
-1. ブラウザで http://localhost:3000 にアクセス
+1. ブラウザで http://localhost:3000 または http://[IPアドレス]:3000 にアクセス
 2. 「接続」ボタンをクリック
 3. 状態が「接続中」に変わることを確認
 4. コンソールに「サーバーに接続しました」が表示されることを確認
+
+**注意**: IPアドレスでアクセスする場合、フロントエンドのコードが自動的に同じIPアドレスの8000番ポートに接続します。
 
 #### 2. 切断テスト
 1. 「切断」ボタンをクリック
@@ -363,6 +359,10 @@ return (
 #### 3. エラーハンドリング
 - `connect_error`イベントで接続エラーをキャッチ
 - コンソールログでデバッグ情報を出力
+
+#### 4. 動的URL設定
+- `window.location.hostname`を使用して、localhostでもIPアドレスでも動作するように設定
+- プロトコルも`window.location.protocol`で動的に取得
 
 
 ---
