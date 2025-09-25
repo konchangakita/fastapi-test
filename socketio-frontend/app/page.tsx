@@ -13,6 +13,8 @@ export default function Home() {
   const [messageInput, setMessageInput] = useState('')
   const [roomInput, setRoomInput] = useState('')
   const [currentRoom, setCurrentRoom] = useState('')
+  const [connectionUrl, setConnectionUrl] = useState('')
+  const [connectionAttempts, setConnectionAttempts] = useState(0)
 
   // メッセージの変更を監視
   useEffect(() => {
@@ -27,7 +29,38 @@ export default function Home() {
     }
 
     console.log('SocketIO接続を開始します...')
-    const newSocket = io(`${window.location.protocol}//${window.location.hostname}:8000`)
+    setConnectionAttempts(prev => prev + 1)
+    
+    // 接続URLを動的に決定（複数のフォールバック）
+    let socketUrl: string
+    try {
+      // まず現在のホスト名を試す
+      const currentHost = window.location.hostname
+      const currentProtocol = window.location.protocol
+      
+      // localhostまたは127.0.0.1の場合は直接指定
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        socketUrl = `${currentProtocol}//${currentHost}:8000`
+      } else {
+        // リモートアクセスの場合は、現在のホスト名を使用
+        socketUrl = `${currentProtocol}//${currentHost}:8000`
+      }
+      
+      console.log('接続URL:', socketUrl)
+      setConnectionUrl(socketUrl)
+    } catch (error) {
+      // フォールバック: デフォルトのlocalhost
+      socketUrl = 'http://localhost:8000'
+      console.log('フォールバック接続URL:', socketUrl)
+      setConnectionUrl(socketUrl)
+    }
+    
+    const newSocket = io(socketUrl, {
+      // 接続オプションを追加
+      timeout: 10000,
+      forceNew: true,
+      transports: ['polling', 'websocket']
+    })
     
     // イベントリスナーを先に登録
     console.log('イベントリスナーを登録中...')
@@ -44,6 +77,13 @@ export default function Home() {
 
     newSocket.on('connect_error', (error: any) => {
       console.error('接続エラー:', error)
+      console.error('エラー詳細:', {
+        message: error.message,
+        description: error.description,
+        context: error.context,
+        type: error.type,
+        url: socketUrl
+      })
       setConnected(false)
     })
 
@@ -89,6 +129,7 @@ export default function Home() {
       setConnected(false)
       setCurrentRoom('')
       setMessages([])
+      setConnectionAttempts(0)
       console.log('手動で切断しました')
     }
   }
@@ -141,6 +182,16 @@ export default function Home() {
         <div className={`status ${connected ? 'connected' : 'disconnected'}`}>
           {connected ? '接続中' : '切断中'}
         </div>
+        {connectionUrl && (
+          <div style={{ marginTop: '5px', fontSize: '12px', color: '#666' }}>
+            接続先: {connectionUrl}
+          </div>
+        )}
+        {connectionAttempts > 0 && (
+          <div style={{ marginTop: '5px', fontSize: '12px', color: '#666' }}>
+            接続試行回数: {connectionAttempts}
+          </div>
+        )}
         <div style={{ marginTop: '10px' }}>
           <button 
             onClick={connectSocket} 
